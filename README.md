@@ -703,3 +703,141 @@ your API and your datastore, all written so generically that you can modify it t
 Cloud for your advanced applications. Firebase can’t be everything to everybody. But it gets pretty close.
 
 
+WEEK 4
+
+1) Which component will be rendered by the following code when navigating to '/login' route ? Give explanation for your answer.
+
+```
+ReactDOM.render((
+<Router>
+<div>
+<Route path="/" render={Home} />
+<Route path="/login" render={Login} />
+</div>
+</Router>),
+document.getElementById('root')
+);
+```
+
+Both Home and Login component will be rendered. This is due to the behaviour of Router. A <Route path> matches the beginning of the URL, not the whole thing. So a <Route path="/"> will always match the URL. Router renders all the props that match with the current path.
+ 
+ 2) Study the following piece of code and suggest changes such that only the Profile component is Rendered when the path is '/dashboard/profile'.
+
+```
+import React from 'react;
+import { BrowserRouter, Route } from 'react-router-dom';
+const App = () => {
+  return (<div>App</div>)
+}
+const Dashboard = () => {
+  return (<div>Dashboard</div>)
+}
+const Profile = () => {
+  return (<div>Profile</div>)
+}
+const Router = () => {
+  return (<BrowserRouter>
+      <Route path='/' component={App}></Route>
+      <Route path='/dashboard/profile' component={Profile}></Route> 
+      <Route path='/dashboard' component={Dashboard}></Route>
+    </BrowserRouter>
+  )
+}
+```
+
+Add exact keyword to the route of App and Dashboard.
+```
+<Route path='/' exact component={App}></Route>
+<Route path='/dashboard' exact component={Dashboard}></Route>
+```
+
+3) What is <Switch/> in react router.
+
+ When a <Switch> is rendered, it searches through its children <Route> elements to find one whose path matches the current URL. When it finds one, it renders that <Route> and     ignores all others. This means that you should put <Route>s with more specific (typically longer) paths before less-specific ones.
+ Switch is generally used in case of nested routing.
+ 
+
+ 4) Write the code for a custom hook that is used to calculate the height and width of a window. Also show its usage.
+
+```
+import { useState, useEffect } from 'react';
+const useWindowSize = () => {
+  const getSize = () => ({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+  const [size, setSize] = useState(getSize);
+  useEffect(() => {
+    const handleResize = () => setSize(getSize());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return size;
+}
+```
+
+Usage
+```
+const App = () => {
+  const size = useWindowSize();
+  return (
+    <div>
+      {size.width}px / {size.height}px
+    </div>
+  );
+}
+```
+
+5) Explain the variations of useEffect 
+
+There are 4 possible ways to call the useEffect method.
+
+a) once, when component mounts
+
+Usually, you would like to use it for fetching data or adding event listeners.
+To run the function once, add an empty dependency list. If there are no dependencies in it, that means it will stay the same all the time, and will not call the function again.
+
+```
+function MyComponent() {
+    // ...
+    React.useEffect(() => {
+        callMeOnlyOnce()
+    }, [])
+    // ...
+}
+```
+
+b) On Every Component Render
+
+To call the function on each component render, skip adding the dependency list. No list, nothing to compare against, that means run the effect every time.
+
+```
+function MyComponent() {
+    // ...
+    React.useEffect(() => {
+        runThisFunctionOnEveryRender();
+    })
+    // ...
+}
+```
+
+c) On Every Component Render with a Condition.
+
+To call a function conditionally, specify the list of dependencies.
+And the rule of thumb is to always add those dependencies that you are using inside the useEffect().
+
+```
+function MyComponent() {
+    // ...
+    React.useEffect(() => {
+        runIfOneOfTheDepsWillChange(dep1, dep2);
+    }, [dep1, dep2])
+    // ...
+}
+```
+
+d) When Component Unmounts
+
+To clean up (remove event listeners or stop data fetching with a side effect) after the component unmounts, a return statement with a function should be added inside the useEffect() hook.
+
+ 
